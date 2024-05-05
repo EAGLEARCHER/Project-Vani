@@ -1,14 +1,38 @@
 import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
+import { RiScreenshot2Fill } from "react-icons/ri";
 
 export default function App() {
+  const [formFields, setFormFields] = useState({
+    userName: "",
+    whatsappContact: "",
+    photo: null,
+    numberOfPeople: 1,
+    namesOfPeople: [],
+    performanceType: "",
+    performanceTheme: "",
+    paymentMode: "UPI",
+    paymentSS: "",
+    howDoYouKnow: "",
+    expectations: "",
+  });
+
   const [count, setCount] = useState(1); // State to track the count of people
   const [names, setNames] = useState({});
+  const [paymentMode, setPaymentMode] = useState("UPI");
   const handleCountChange = (e) => {
     if (!e.target.value) {
       setCount(0);
     } else {
       setCount(parseInt(e.target.value)); // Update the count state when the input value changes
+      const newCount = parseInt(e.target.value);
+      setFormFields((prevFields) => ({
+        ...prevFields,
+        numberOfPeople: newCount,
+        // Clear namesOfPeople when count is decreased
+        namesOfPeople:
+          newCount < prevFields.numberOfPeople ? [] : prevFields.namesOfPeople,
+      }));
     }
     if (newCount < count) {
       setNames({});
@@ -21,6 +45,13 @@ export default function App() {
       [index]: newName,
     }));
     console.log(names);
+  };
+  const handlePaymentModeChange = (e) => {
+    const newPaymentMode = e.target.value;
+    setFormFields((prevFields) => ({
+      ...prevFields,
+      paymentMode: newPaymentMode,
+    }));
   };
 
   return (
@@ -99,6 +130,26 @@ export default function App() {
                 </div>
               </div>
             </div>
+            <div className="col-span-full">
+              <label
+                htmlFor="photo"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Photo
+              </label>
+              <div className="mt-2 flex items-center gap-x-3">
+                <UserCircleIcon
+                  className="h-12 w-12 text-gray-300"
+                  aria-hidden="true"
+                />
+                <button
+                  type="button"
+                  className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                >
+                  Change
+                </button>
+              </div>
+            </div>
             <div className="sm:col-span-4">
               <label
                 htmlFor="count"
@@ -120,68 +171,114 @@ export default function App() {
                   />
                 </div>
               </div>
-              {count === 0
-                ? null
-                : [...Array(count)].map((_, index) => (
-                    <div key={index} className="mt-2">
-                      <label
-                        htmlFor={`person-${index + 1}`}
-                        className="block text-sm font-medium leading-6 text-gray-900"
-                      >
-                        Person {index + 1} Name
-                      </label>
-                      <div className="mt-1">
-                        <input
-                          type="text"
-                          id={`person-${index + 1}`}
-                          name={`person-${index + 1}`}
-                          value={names[index] || ""}
-                          onChange={(e) => handleNameChange(e, index)}
-                          className="block flex-1 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-indigo-500 focus:ring-0 sm:text-sm sm:leading-6 border border-gray-300"
-                        />
+              <div className="sm:col-span-4">
+                {count === 0
+                  ? null
+                  : [...Array(count)].map((_, index) => (
+                      <div key={index} className="mt-2">
+                        <label
+                          htmlFor={`person-${index + 1}`}
+                          className="block text-sm font-medium leading-6 text-gray-900"
+                        >
+                          Person {index + 1} Name
+                        </label>
+                        <div className="mt-1">
+                          <input
+                            type="text"
+                            id={`person-${index + 1}`}
+                            name={`person-${index + 1}`}
+                            value={names[index] || ""}
+                            onChange={(e) => handleNameChange(e, index)}
+                            className="block flex-1 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-indigo-500 focus:ring-0 sm:text-sm sm:leading-6 border border-gray-300"
+                          />
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+              </div>
+            </div>
+            <div className="sm:col-span-4">
+              <label
+                htmlFor="performanceType"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Performance Type
+              </label>
+              <div className="mt-2">
+                <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                  <input
+                    type="text"
+                    name="performanceType"
+                    id="performanceType"
+                    autoComplete="performanceType"
+                    className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                    placeholder="Singing/Standup/Poetry"
+                  />
+                </div>
+              </div>
             </div>
             <div className="col-span-full">
               <label
-                htmlFor="description"
+                htmlFor="performanceTheme"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
-                Description
+                Performance Description
               </label>
               <div className="mt-2">
                 <textarea
-                  id="description"
-                  name="description"
+                  id="performanceTheme"
+                  name="performanceTheme"
                   rows={3}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   defaultValue={""}
                 />
               </div>
               <p className="mt-3 text-sm leading-6 text-gray-600">
-                Write a brief description about yourself and performance.
+                Write a brief description about performance.
               </p>
             </div>
-            <div className="col-span-full">
+            <div className="sm:col-span-4">
               <label
-                htmlFor="photo"
+                htmlFor="paymentMode"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
-                Photo
+                Payment Mode
               </label>
-              <div className="mt-2 flex items-center gap-x-3">
-                <UserCircleIcon
-                  className="h-12 w-12 text-gray-300"
-                  aria-hidden="true"
-                />
-                <button
-                  type="button"
-                  className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                >
-                  Change
-                </button>
-              </div>
+              <select
+                id="paymentMode"
+                name="paymentMode"
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                value={formFields.paymentMode} // Use formFields.paymentMode to sync with the state
+                onChange={handlePaymentModeChange}
+              >
+                <option value="UPI">UPI</option>
+                <option value="Cash">Cash</option>
+              </select>
+            </div>
+            <div className="col-span-full">
+              {formFields.paymentMode === "UPI" ? (
+                <div>
+                  {" "}
+                  <label
+                    htmlFor="photo"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Screenshot of transaction
+                  </label>
+                  <div className="mt-2 flex items-center gap-x-3">
+                    <RiScreenshot2Fill
+                      className="h-12 w-12 text-gray-300"
+                      aria-hidden="true"
+                    />
+
+                    <button
+                      type="button"
+                      className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                    >
+                      Change
+                    </button>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
