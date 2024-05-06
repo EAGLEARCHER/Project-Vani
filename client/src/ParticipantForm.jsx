@@ -3,7 +3,7 @@ import { useState } from "react";
 import { RiScreenshot2Fill } from "react-icons/ri";
 
 export default function ParticipantForm() {
-  const [formFields, setFormFields] = useState({
+  const [formData, setFormData] = useState({
     userName: "",
     igUserName: "",
     phoneNumber: "",
@@ -15,76 +15,74 @@ export default function ParticipantForm() {
     paymentMode: "UPI",
     paymentSS: "",
     howDoYouKnow: "",
-    expectations: "",
   });
+  const [photo, setPhoto] = useState(null); // State to store the uploaded photo
 
-  const [count, setCount] = useState(1); // State to track the count of people
-  const [names, setNames] = useState({});
-  const [paymentMode, setPaymentMode] = useState("UPI");
+  const [transactionScreenshot, setTransactionScreenshot] = useState(null); // State to store the uploaded transaction screenshot
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    setPhoto(file); // Update the state with the selected photo
+  };
+
+  const handleTransactionScreenshotChange = (e) => {
+    const file = e.target.files[0];
+    setTransactionScreenshot(file); // Update the state with the selected transaction screenshot
+  };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+
   const handleCountChange = (e) => {
-    if (!e.target.value) {
-      setCount(0);
-    } else {
-      setCount(parseInt(e.target.value)); // Update the count state when the input value changes
-      const newCount = parseInt(e.target.value);
-      setFormFields((prevFields) => ({
-        ...prevFields,
-        numberOfPeople: newCount,
-        // Clear namesOfPeople when count is decreased
-        namesOfPeople:
-          newCount < prevFields.numberOfPeople ? [] : prevFields.namesOfPeople,
-      }));
-    }
-    if (newCount < count) {
-      setNames({});
-    }
-  };
-  const handleNameChange = (e, index) => {
-    const newName = e.target.value;
-    setNames((prevNames) => ({
-      ...prevNames,
-      [index]: newName,
-    }));
-    console.log(names);
-  };
-  const handlePaymentModeChange = (e) => {
-    const newPaymentMode = e.target.value;
-    setFormFields((prevFields) => ({
-      ...prevFields,
-      paymentMode: newPaymentMode,
+    const count = parseInt(e.target.value) || 0;
+    const newNames = Array(count).fill("");
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      numberOfPeople: count,
+      namesOfPeople: newNames,
     }));
   };
-  const handleName = (e) => {
-    const name = e.target.value;
-    if (name) {
-      setFormFields((prevFields) => ({ ...prevFields, userName: name }));
-    }
-    console.log(formFields.userName);
-  };
-  const handleIGName = (e) => {
-    const username = e.target.value;
-    if (username) {
-      setFormFields((prevFields) => ({ ...prevFields, igUserName: username }));
-    }
-    console.log(formFields.igUserName);
-  };
-  const handlePhoneNumber = (e) => {
-    let phone = e.target.value;
 
-    setFormFields((prevFields) => ({ ...prevFields, phoneNumber: phone }));
+  const handlePaymentModeChange = (e) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      paymentMode: e.target.value,
+    }));
   };
+
+  const handleSaveData = (e) => {
+    e.preventDefault();
+    console.log("save data", formData);
+  };
+
+  const {
+    userName,
+    igUserName,
+    phoneNumber,
+    numberOfPeople,
+    namesOfPeople,
+    performanceType,
+    performanceTheme,
+    paymentMode,
+    howDoYouKnow,
+  } = formData;
+
   return (
-    <form className="px-10 py-4 flex justify-center align-center">
-      <div className="space-y-12" style={{width:"25rem"}}>
+    <form
+      className="px-10 py-4 flex justify-center align-center"
+      onSubmit={handleSaveData}
+    >
+      <div className="space-y-12" style={{ width: "25rem" }}>
         <div className="border-b border-gray-900/10 pb-12">
-          <h2 className="text-base font-semibold leading-7 text-gray-900">
-            Personal Information
-          </h2>
+          
           <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-            {/* NAME DATA OF USER*/}
+            {/* NAME DATA OF USER */}
             <div className="sm:col-span-4">
               <label
-                htmlFor="name"
+                htmlFor="userName"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
                 Name
@@ -92,13 +90,15 @@ export default function ParticipantForm() {
               <div className="mt-2">
                 <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
                   <input
+                    required
                     type="text"
-                    name="name"
-                    id="name"
+                    name="userName"
+                    id="userName"
                     autoComplete="name"
                     className="block flex-1 border-0  py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                     placeholder="janesmith"
-                    onChange={handleName}
+                    value={userName}
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
@@ -106,7 +106,7 @@ export default function ParticipantForm() {
             {/* IG USERNAME DATA OF USER */}
             <div className="sm:col-span-4">
               <label
-                htmlFor="username"
+                htmlFor="igUserName"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
                 Instagram Username
@@ -114,13 +114,15 @@ export default function ParticipantForm() {
               <div className="mt-2">
                 <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
                   <input
+                    required
                     type="text"
-                    name="username"
-                    id="username"
+                    name="igUserName"
+                    id="igUserName"
                     autoComplete="username"
                     className="block flex-1 border-0  py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                     placeholder="janesmith"
-                    onChange={handleIGName}
+                    value={igUserName}
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
@@ -129,7 +131,7 @@ export default function ParticipantForm() {
             {/* Contact Number of the user */}
             <div className="sm:col-span-4">
               <label
-                htmlFor="phone"
+                htmlFor="phoneNumber"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
                 Phone Number
@@ -137,13 +139,15 @@ export default function ParticipantForm() {
               <div className="mt-2">
                 <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
                   <input
+                    required
                     type="number"
-                    name="phone"
-                    id="phone"
+                    name="phoneNumber"
+                    id="phoneNumber"
                     autoComplete="phone"
                     className="block flex-1 border-0  py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                     placeholder="1234567890"
-                    onChange={handlePhoneNumber}
+                    value={phoneNumber}
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
@@ -157,22 +161,36 @@ export default function ParticipantForm() {
                 Photo
               </label>
               <div className="mt-2 flex items-center gap-x-3">
-                <UserCircleIcon
-                  className="h-12 w-12 text-gray-300"
-                  aria-hidden="true"
+                <img
+                  src={
+                    photo
+                      ? URL.createObjectURL(photo)
+                      : "/default-placeholder.jpg"
+                  }
+                  alt="Uploaded"
+                  className="h-12 w-12 object-cover rounded-full"
                 />
-                <button
-                  type="button"
-                  className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                <input
+                  type="file"
+                  id="photo"
+                  name="photo"
+                  accept="image/*"
+                  className="sr-only"
+                  onChange={handlePhotoChange} // Add onChange event handler
+                  required // Make the input required
+                />
+                <label
+                  htmlFor="photo"
+                  className="cursor-pointer rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                 >
                   Upload
-                </button>
+                </label>
               </div>
             </div>
             {/* Number of People with the user */}
             <div className="sm:col-span-4">
               <label
-                htmlFor="count"
+                htmlFor="numberOfPeople"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
                 Number of people with you
@@ -181,39 +199,37 @@ export default function ParticipantForm() {
                 <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
                   <input
                     type="number"
-                    name="count"
-                    id="count"
+                    name="numberOfPeople"
+                    id="numberOfPeople"
                     autoComplete="count"
                     className="block flex-1 border-0 py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                     placeholder=""
-                    value={count}
+                    value={numberOfPeople}
                     onChange={handleCountChange}
                   />
                 </div>
               </div>
               <div className="sm:col-span-4">
-                {count === 0
-                  ? null
-                  : [...Array(count)].map((_, index) => (
-                      <div key={index} className="mt-2">
-                        <label
-                          htmlFor={`person-${index + 1}`}
-                          className="block text-sm font-medium leading-6 text-gray-900"
-                        >
-                          Person {index + 1} Name
-                        </label>
-                        <div className="mt-1">
-                          <input
-                            type="text"
-                            id={`person-${index + 1}`}
-                            name={`person-${index + 1}`}
-                            value={names[index] || ""}
-                            onChange={(e) => handleNameChange(e, index)}
-                            className="block flex-1 py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-indigo-500 focus:ring-0 sm:text-sm sm:leading-6 border border-gray-300"
-                          />
-                        </div>
-                      </div>
-                    ))}
+                {namesOfPeople.map((_, index) => (
+                  <div key={index} className="mt-2">
+                    <label
+                      htmlFor={`person-${index + 1}`}
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Person {index + 1} Name
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        type="text"
+                        id={`person-${index + 1}`}
+                        name={`namesOfPeople[${index}]`}
+                        value={namesOfPeople[index] || ""}
+                        onChange={handleInputChange}
+                        className="block flex-1 py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-indigo-500 focus:ring-0 sm:text-sm sm:leading-6 border border-gray-300"
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
             {/* What is going to be performed */}
@@ -233,6 +249,8 @@ export default function ParticipantForm() {
                     autoComplete="performanceType"
                     className="block flex-1 border-0 bg- py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                     placeholder="Singing/Standup/Poetry"
+                    value={performanceType}
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
@@ -251,7 +269,8 @@ export default function ParticipantForm() {
                   name="performanceTheme"
                   rows={3}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  defaultValue={""}
+                  value={performanceTheme}
+                  onChange={handleInputChange}
                 />
               </div>
               <p className="mt-3 text-sm leading-6 text-gray-600">
@@ -270,45 +289,79 @@ export default function ParticipantForm() {
                 id="paymentMode"
                 name="paymentMode"
                 className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                value={formFields.paymentMode} // Use formFields.paymentMode to sync with the state
+                value={paymentMode}
                 onChange={handlePaymentModeChange}
               >
-                <option value="UPI">UPI</option>
-                <option value="Cash">Cash</option>
+                <option value="Gpay">Gpay</option>
+                <option value="Paytm">Paytm</option>
+                <option value="Phonepay">Phonepay</option>
+                <option value="Bhim">Bhim</option>
               </select>
             </div>
-            {/* If payment mode is upi then add the screenshot of transaction */}
+            {/* Add the screenshot of transaction */}
             <div className="col-span-full">
-              {formFields.paymentMode === "UPI" ? (
-                <div>
-                  <label
-                    htmlFor="photo"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Screenshot of transaction
-                  </label>
-                  <div className="mt-2 flex items-center gap-x-3">
-                    <RiScreenshot2Fill
-                      className="h-12 w-12 text-gray-300"
-                      aria-hidden="true"
-                    />
-
-                    <button
-                      type="button"
-                      className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                    >
-                      Upload
-                    </button>
-                  </div>
+              <label
+                htmlFor="transactionScreenshot"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Transaction Screenshot
+              </label>
+              <div className="mt-2 flex items-center gap-x-3">
+                <img
+                  src={
+                    transactionScreenshot
+                      ? URL.createObjectURL(transactionScreenshot)
+                      : "/default-placeholder.jpg"
+                  }
+                  alt="Uploaded"
+                  className="h-12 w-12 object-cover rounded-full"
+                />
+                <input
+                  type="file"
+                  id="transactionScreenshot"
+                  name="transactionScreenshot"
+                  accept="image/*"
+                  className="sr-only"
+                  onChange={handleTransactionScreenshotChange} // Add onChange event handler
+                  required // Make the input required
+                />
+                <label
+                  htmlFor="transactionScreenshot"
+                  className="cursor-pointer rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                >
+                  Upload
+                </label>
+              </div>
+            </div>
+            {/*How do you know about us*/}
+            <div className="sm:col-span-4">
+              <label
+                htmlFor="howDoYouKnow"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                How do you know about us
+              </label>
+              <div className="mt-2">
+                <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                  <input
+                    type="text"
+                    name="howDoYouKnow"
+                    id="howDoYouKnow"
+                    autoComplete="howDoYouKnow"
+                    className="block flex-1 border-0 bg- py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                    placeholder="Instagram/Friend/Other"
+                    value={howDoYouKnow}
+                    onChange={handleInputChange}
+                  />
                 </div>
-              ) : null}
+              </div>
             </div>
           </div>
           <div className="mt-6 flex items-center justify-end gap-x-6">
             <button
               type="button"
               className="text-sm font-semibold leading-6 text-gray-900"
-              onClick={() => setFormFields({})}
+              onClick={() => setFormData({})}
             >
               Cancel
             </button>
