@@ -96,7 +96,6 @@ export default function ParticipantForm() {
                     id="userName"
                     autoComplete="name"
                     className="block flex-1 border-0  py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                    placeholder="janesmith"
                     value={userName}
                     onChange={handleInputChange}
                   />
@@ -120,7 +119,6 @@ export default function ParticipantForm() {
                     id="igUserName"
                     autoComplete="username"
                     className="block flex-1 border-0  py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                    placeholder="janesmith"
                     value={igUserName}
                     onChange={handleInputChange}
                   />
@@ -203,7 +201,6 @@ export default function ParticipantForm() {
                     id="numberOfPeople"
                     autoComplete="count"
                     className="block flex-1 border-0 py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                    placeholder=""
                     value={numberOfPeople}
                     onChange={handleCountChange}
                   />
